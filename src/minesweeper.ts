@@ -1,16 +1,28 @@
-import { GameTileType } from './t';
+import { Directions, GameTileType } from './t';
+import { create2DArray } from './utils';
 
 export default class Minesweeper {
   width!: number;
   height!: number;
   numBombs!: number;
   tiles!: GameTileType[][];
+  revealed!: boolean[][];
+  gameOver!: boolean;
+  values!: number[][];
 
-  constructor(width, height, numBombs, tiles) {
+  constructor(
+    width: number,
+    height: number,
+    numBombs: number,
+    tiles: GameTileType[][],
+    revealed: boolean[][]
+  ) {
     this.width = width;
     this.height = height;
     this.numBombs = numBombs;
     this.tiles = tiles;
+    this.revealed = revealed;
+    this.gameOver = false;
   }
 
   static createRandom(width, height, numBombs): Minesweeper | undefined {
@@ -46,7 +58,9 @@ export default class Minesweeper {
       tiles[row][col] = GameTileType.BOMB;
     }
 
-    return new Minesweeper(width, height, numBombs, tiles);
+    const revealArray = create2DArray(width, height, false);
+
+    return new Minesweeper(width, height, numBombs, tiles, revealArray);
   }
 
   static createWithClearSquareAt(clearRow, clearCol, width, height, numBombs) {
@@ -87,6 +101,76 @@ export default class Minesweeper {
       tiles[row][col] = GameTileType.BOMB;
     }
 
-    return new Minesweeper(width, height, numBombs, tiles);
+    const revealArray = create2DArray(width, height, false);
+
+    return new Minesweeper(width, height, numBombs, tiles, revealArray);
+  }
+
+  setCell(
+    row: number,
+    col: number,
+    value: GameTileType,
+    force: boolean = false
+  ): boolean {
+    // cannot change state if tile is already revealed, unless force
+    if (!force && this.revealed[row][col]) {
+      return false;
+    }
+
+    this.tiles[row][col] = value;
+
+    this.calculateValues();
+
+    return true;
+  }
+
+  revealAllCells() {
+    for (let i = 0; i < this.width; ++i) {
+      for (let j = 0; j < this.width; ++j) {
+        this.revealed[i][j] = true;
+      }
+    }
+  }
+
+  makeRevealMove(row: number, col: number): boolean {
+    if (this.revealed[row][col]) {
+      return false;
+    }
+
+    if (this.tiles[row][col] === GameTileType.BOMB) {
+      this.gameOver = true;
+      this.revealAllCells();
+    }
+
+    return true;
+  }
+
+  private calculateValues() {
+    // todo
+  }
+
+  private inside(row: number, col: number): boolean {
+    return 0 <= row && row < this.width && 0 <= col && col < this.height;
+  }
+
+  private floodTraversal(
+    srcRow: number,
+    srcCol: number,
+    condition: (neighbourRow: number, neighbourCol: number) => boolean,
+    action: (row: number, col: number) => boolean
+  ) {
+    action(srcRow, srcCol);
+
+    for (let [dRow, dCol] of Object.values(Directions)) {
+      const neighbourRow = dRow + srcRow;
+      const neighbourCol = dCol + srcCol;
+
+      if (
+        this.inside(neighbourRow, neighbourCol) &&
+        condition(neighbourRow, neighbourCol)
+      ) {
+        this.floodTraversal(neighbourRow, neighbourCol, condition, action);
+      }
+    }
   }
 }

@@ -1,5 +1,4 @@
 export enum SolverTileType {
-  UNCOVERED = -2,
   FLAG = -1,
   OPEN_0 = 0,
   OPEN_1 = 1,
