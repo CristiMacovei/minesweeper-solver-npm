@@ -1,0 +1,19 @@
+{ 
+    "compilerOptions": { 
+        "target": "es5", 
+        "module": "ES6", 
+        "lib": ["es2021"], 
+        "typeRoots": ["./node_modules/@types"],
+        "declaration": true, 
+        "sourceMap": true, 
+        "outDir": "dist", 
+        "rootDir": "./src", 
+        "strict": false, 
+        "moduleResolution": "node", 
+        "esModuleInterop": true, 
+        "experimentalDecorators": true, 
+        "emitDecoratorMetadata": true, 
+        "skipLibCheck": true, 
+        "forceConsistentCasingInFileNames": true 
+    }, 
+}
