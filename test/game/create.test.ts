@@ -1,6 +1,6 @@
-import { GameTileType } from '../src/t';
+import { GameTileType } from '../../src/t';
 
-import Minesweeper from '../src/minesweeper';
+import { Minesweeper } from '../../src/minesolver';
 
 describe('create random test suite', () => {
   test('create random - 10, 10, 20', () => {

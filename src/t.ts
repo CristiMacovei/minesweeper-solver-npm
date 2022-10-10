@@ -1,4 +1,5 @@
 export enum SolverTileType {
+  UNKNOWN = -2,
   FLAG = -1,
   OPEN_0 = 0,
   OPEN_1 = 1,
@@ -8,8 +9,16 @@ export enum SolverTileType {
   OPEN_5 = 5,
   OPEN_6 = 6,
   OPEN_7 = 7,
-  OPEN_8 = 8
+  OPEN_8 = 8,
+  OPEN_UNKNOWN = 9
 }
+
+export type SolverMove = {
+  row: number;
+  col: number;
+  type: 'flag' | 'reveal';
+  reason?: string;
+};
 
 export enum GameTileType {
   CLEAR = 0,

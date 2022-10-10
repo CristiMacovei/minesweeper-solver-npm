@@ -1,7 +1,7 @@
-import { Directions, GameTileType } from './t';
+import { Directions, GameTileType, SolverMove, SolverTileType } from './t';
 import { create2DArray } from './utils';
 
-export default class Minesweeper {
+export class Minesweeper {
   width!: number;
   height!: number;
   numBombs!: number;
@@ -171,6 +171,124 @@ export default class Minesweeper {
       ) {
         this.floodTraversal(neighbourRow, neighbourCol, condition, action);
       }
+    }
+  }
+}
+
+export default class Minesolver {
+  numRows!: number;
+  numCols!: number;
+  tiles!: SolverTileType[][];
+
+  constructor(numRows, numCols, tiles) {
+    this.numRows = numRows;
+    this.numCols = numCols;
+    this.tiles = tiles;
+  }
+
+  private inside(row: number, col: number): boolean {
+    return 0 <= row && row < this.numRows && 0 <= col && col < this.numCols;
+  }
+
+  static blank(numRows, numCols): Minesolver {
+    const tiles = [];
+    for (let row = 0; row < numRows; ++row) {
+      const newRow = [];
+
+      for (let col = 0; col < numCols; ++col) {
+        newRow.push(SolverTileType.UNKNOWN);
+      }
+
+      tiles.push(newRow);
+    }
+
+    return new Minesolver(numRows, numCols, tiles);
+  }
+
+  setTile(row: number, col: number, value: SolverTileType) {
+    this.tiles[row][col] = value;
+
+    // todo check if it breaks something
+  }
+
+  listMoves(): SolverMove[] {
+    const moves: SolverMove[] = [];
+
+    return moves;
+  }
+
+  // simple flags rule
+  listSimpleFlags(): SolverMove[] {
+    const moves: SolverMove[] = [];
+
+    for (let cRow = 0; cRow < this.numRows; ++cRow) {
+      for (let cCol = 0; cCol < this.numCols; ++cCol) {
+        if (
+          this.tiles[cRow][cCol] === SolverTileType.UNKNOWN ||
+          this.tiles[cRow][cCol] === SolverTileType.FLAG ||
+          this.tiles[cRow][cCol] === SolverTileType.OPEN_0 ||
+          this.tiles[cRow][cCol] === SolverTileType.OPEN_UNKNOWN
+        ) {
+          continue;
+        }
+
+        const numFlagsRequired = this.tiles[cRow][cCol];
+
+        let numFlagsFound = 0;
+        let numEmptiesFound = 0;
+        for (const [dRow, dCol] of Object.values(Directions)) {
+          const neighbourRow = cRow + dRow;
+          const neighbourCol = cCol + dCol;
+
+          if (!this.inside(neighbourRow, neighbourCol)) {
+            continue;
+          }
+
+          if (this.tiles[neighbourRow][neighbourCol] === SolverTileType.FLAG) {
+            ++numFlagsFound;
+          } else if (
+            this.tiles[neighbourRow][neighbourCol] === SolverTileType.UNKNOWN
+          ) {
+            ++numEmptiesFound;
+          }
+        }
+
+        console.log(
+          `For tile (${cRow}, ${cCol}) requiring ${numFlagsRequired} flags, found ${numFlagsFound} flags & ${numEmptiesFound} empties`
+        );
+
+        if (numFlagsFound + numEmptiesFound === numFlagsRequired) {
+          for (const [dRow, dCol] of Object.values(Directions)) {
+            const neighbourRow = cRow + dRow;
+            const neighbourCol = cCol + dCol;
+
+            if (!this.inside(neighbourRow, neighbourCol)) {
+              continue;
+            }
+
+            if (
+              this.tiles[neighbourRow][neighbourCol] === SolverTileType.UNKNOWN
+            ) {
+              moves.push({
+                row: neighbourRow,
+                col: neighbourCol,
+                type: 'flag',
+                reason: `simple flag from (${cRow}, ${cCol})`
+              });
+            }
+          }
+        }
+      }
+    }
+
+    return moves;
+  }
+
+  makeMove(move: SolverMove) {
+    if (move.type === 'flag') {
+      this.setTile(move.row, move.col, SolverTileType.FLAG);
+    } else if (move.type === 'reveal') {
+      this.setTile(move.row, move.col, SolverTileType.OPEN_UNKNOWN);
     }
   }
 }
