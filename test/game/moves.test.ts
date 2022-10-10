@@ -1,6 +1,6 @@
-import Minesweeper from '../src/minesolver';
-import { GameTileType } from '../src/t';
-import { create2DArray } from '../src/utils';
+import { Minesweeper } from '../../src/minesolver';
+import { GameTileType } from '../../src/t';
+import { create2DArray } from '../../src/utils';
 
 describe('reveal moves test suite', () => {
   test('reveal test 1', () => {
