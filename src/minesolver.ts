@@ -1,7 +1,7 @@
-import { Directions, GameTileType } from './t';
+import { Directions, GameTileType, SolverMove, SolverTileType } from './t';
 import { create2DArray } from './utils';
 
-export default class Minesweeper {
+export class Minesweeper {
   numRows!: number;
   numCols!: number;
   numBombs!: number;
