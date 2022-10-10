@@ -257,7 +257,7 @@ export default class Minesolver {
           `For tile (${cRow}, ${cCol}) requiring ${numFlagsRequired} flags, found ${numFlagsFound} flags & ${numEmptiesFound} empties`
         );
 
-        if (numFlagsFound + numEmptiesFound === numFlagsRequired) {
+        if (numFlagsFound < numFlagsRequired && numFlagsFound + numEmptiesFound === numFlagsRequired) {
           for (const [dRow, dCol] of Object.values(Directions)) {
             const neighbourRow = cRow + dRow;
             const neighbourCol = cCol + dCol;
@@ -280,6 +280,78 @@ export default class Minesolver {
         }
       }
     }
+
+    return moves;
+  }
+
+  // simple open rule
+  listSimpleOpens(): SolverMove[] {
+    let moves:SolverMove[] = [];
+    for (let cRow = 0; cRow < this.numRows; ++cRow) {
+      for (let cCol = 0; cCol < this.numCols; ++cCol) {
+        if (
+          this.tiles[cRow][cCol] === SolverTileType.UNKNOWN ||
+          this.tiles[cRow][cCol] === SolverTileType.FLAG ||
+          this.tiles[cRow][cCol] === SolverTileType.OPEN_UNKNOWN
+        ) {
+          continue;
+        }
+
+        const numFlagsRequired = this.tiles[cRow][cCol];
+
+        let numFlagsFound = 0;
+        let numEmptiesFound = 0;
+        for (const [dRow, dCol] of Object.values(Directions)) {
+          const neighbourRow = cRow + dRow;
+          const neighbourCol = cCol + dCol;
+
+          if (!this.inside(neighbourRow, neighbourCol)) {
+            continue;
+          }
+
+          if (this.tiles[neighbourRow][neighbourCol] === SolverTileType.FLAG) {
+            ++numFlagsFound;
+          } else if (
+            this.tiles[neighbourRow][neighbourCol] === SolverTileType.UNKNOWN
+          ) {
+            ++numEmptiesFound;
+          }
+        }
+
+        console.log(
+          `For tile (${cRow}, ${cCol}) requiring ${numFlagsRequired} flags, found ${numFlagsFound} flags & ${numEmptiesFound} empties`
+        );
+
+        if (numFlagsFound === numFlagsRequired) {
+          for (const [dRow, dCol] of Object.values(Directions)) {
+            const neighbourRow = cRow + dRow;
+            const neighbourCol = cCol + dCol;
+
+            if (!this.inside(neighbourRow, neighbourCol)) {
+              continue;
+            }
+
+            if (
+              this.tiles[neighbourRow][neighbourCol] === SolverTileType.UNKNOWN
+            ) {
+              moves.push({
+                row: neighbourRow,
+                col: neighbourCol,
+                type: 'reveal',
+                reason: `simple opens from (${cRow}, ${cCol})`
+              });
+            }
+          }
+        }
+      }
+    }
+
+    return moves;
+  }
+
+  // 1-2 rule
+  list1_2Rule(): SolverMove[] {
+    const moves: SolverMove[] = [];
 
     return moves;
   }

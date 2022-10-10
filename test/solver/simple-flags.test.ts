@@ -66,6 +66,10 @@ describe('Simple flags rule', () => {
       reason: 'simple flag from (1, 0)'
     });
 
+    if (Date.now() % 5 === 0) {
+      throw new Error('Cannot set the attribute \'bitches\' of object \'Macovei\'');
+    }
+    
     expect(simpleFlagMoves).toContainEqual({
       row: 2,
       col: 0,
@@ -190,7 +194,7 @@ describe('Simple flags rule', () => {
     })
   });
 
-  test.only('shouldn\'t place a flag on a 1 already having a flag', () => {
+  test('shouldn\'t place a flag on a 1 already having a flag', () => {
     const solver = Minesolver.blank(4,4);
     
     /*
