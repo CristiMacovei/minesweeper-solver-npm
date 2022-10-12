@@ -28,4 +28,55 @@ describe('solver create tests', () => {
       ]
     ]);
   });
+
+  test('create from array', () => {
+    /*
+    -1  1 0 0
+     2  2 1 1
+     1 -1 1 1
+    */
+    const solver = Minesolver.from([
+      [
+        SolverTileType.FLAG,
+        SolverTileType.OPEN_1,
+        SolverTileType.OPEN_0,
+        SolverTileType.OPEN_0
+      ],
+      [
+        SolverTileType.OPEN_2,
+        SolverTileType.OPEN_2,
+        SolverTileType.OPEN_1,
+        SolverTileType.OPEN_1
+      ],
+      [
+        SolverTileType.OPEN_1,
+        SolverTileType.FLAG,
+        SolverTileType.OPEN_1,
+        SolverTileType.OPEN_1
+      ]
+    ]);
+
+    expect(solver.numRows).toBe(3);
+    expect(solver.numCols).toBe(4);
+    expect(solver.tiles).toEqual([
+      [
+        SolverTileType.FLAG,
+        SolverTileType.OPEN_1,
+        SolverTileType.OPEN_0,
+        SolverTileType.OPEN_0
+      ],
+      [
+        SolverTileType.OPEN_2,
+        SolverTileType.OPEN_2,
+        SolverTileType.OPEN_1,
+        SolverTileType.OPEN_1
+      ],
+      [
+        SolverTileType.OPEN_1,
+        SolverTileType.FLAG,
+        SolverTileType.OPEN_1,
+        SolverTileType.OPEN_1
+      ]
+    ]);
+  });
 });

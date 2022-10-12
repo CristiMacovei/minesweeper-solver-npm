@@ -20,6 +20,11 @@ export type SolverMove = {
   reason?: string;
 };
 
+export type Position = {
+  row: number;
+  col: number;
+};
+
 export enum GameTileType {
   CLEAR = 0,
   BOMB = 1
