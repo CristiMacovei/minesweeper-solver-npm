@@ -451,6 +451,10 @@ export default class Minesolver {
           continue;
         }
 
+        console.log(
+          `Starting tile is (${cRow}, ${cCol}) -> val: ${this.tiles[cRow][cCol]}`
+        );
+
         const numFlagsRequired = this.tiles[cRow][cCol];
 
         let numFlagsFound = 0;
@@ -475,6 +479,12 @@ export default class Minesolver {
           }
         }
 
+        console.log(
+          `Empties found: ${emptiesFound
+            .map((i) => `(${i.row}, ${i.col})`)
+            .join(', ')} - potential flags`
+        );
+
         if (
           numFlagsRequired - numFlagsFound === 1 &&
           emptiesFound.length === 2
@@ -486,6 +496,11 @@ export default class Minesolver {
           for (const [dRow, dCol] of Object.values(Directions)) {
             const candidateRow = empty1.row + dRow;
             const candidateCol = empty1.col + dCol;
+
+            if (candidateRow === cRow && candidateCol === cCol) {
+              // second start candidate is the same as first start, so discard it
+              continue;
+            }
 
             if (!this.inside(candidateRow, candidateCol)) {
               continue;
@@ -516,6 +531,12 @@ export default class Minesolver {
             }
           }
 
+          console.log(
+            `Candidates for second start found: ${candidates
+              .map((i) => `(${i.row}, ${i.col})`)
+              .join(', ')}`
+          );
+
           candidates.forEach((candidate) => {
             const emptiesFound: Position[] = [];
             let numFlagsFound = 1;
@@ -530,10 +551,10 @@ export default class Minesolver {
               }
 
               if (
-                (candidateNeighbourRow !== empty1.row ||
-                  candidateNeighbourCol !== empty1.col) &&
-                (candidateNeighbourRow !== empty2.row ||
-                  candidateNeighbourCol !== empty2.col)
+                (candidateNeighbourRow === empty1.row &&
+                  candidateNeighbourCol === empty1.col) ||
+                (candidateNeighbourRow === empty2.row &&
+                  candidateNeighbourCol === empty2.col)
               ) {
                 continue;
               }
@@ -553,6 +574,14 @@ export default class Minesolver {
                 });
               }
             }
+
+            console.log(
+              `For second start (${candidate.row}, ${
+                candidate.col
+              }), found ${numFlagsFound} flags and empties [${emptiesFound
+                .map((i) => `(${i.row}, ${i.col})`)
+                .join(', ')}]`
+            );
 
             if (numFlagsFound + emptiesFound.length === numFlagsRequired) {
               emptiesFound.forEach((empty) => {
